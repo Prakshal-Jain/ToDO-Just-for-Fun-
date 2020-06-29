@@ -1,17 +1,38 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <AddToDo v-bind:numbers="todos.length" v-on:new_todo="handleNewTodo" />
+    <Todos v-bind:todos="todos" v-on:delete="handleDelete"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Todos from './components/todos'
+import AddToDo from './components/AddTodo'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Todos,
+    AddToDo
+  },
+  data(){
+    return{
+      todos: []
+    }
+  },
+  methods:{
+    handleDelete(id){
+      this.todos = this.todos.filter(todo => todo.id !== id)
+    },
+    handleNewTodo(todo){
+      console.log(todo)
+      this.todos = [...this.todos,todo]
+    }
+  },
+  created(){
+    fetch('http://jsonplaceholder.typicode.com/todos?_limit=8')
+    .then(response => response.json())
+    .then(info => this.todos = info)
+    .catch(err => console.log(err))
   }
 }
 </script>
